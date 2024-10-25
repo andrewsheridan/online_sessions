@@ -6,12 +6,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
-import 'package:online_sessions/model/online_session_base.dart';
 
+import '../model/online_session_base.dart';
 import 'online_code_cubit.dart';
 import 'username_cubit.dart';
 
-class OnlineSessionCubit<T extends OnlineSessionBase> extends Cubit<T?> {
+abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
+    extends Cubit<T?> {
   final OnlineCodeCubit _codeCubit;
   final FirebaseAuth _auth;
   final FirebaseStorage _storage;
@@ -35,7 +36,7 @@ class OnlineSessionCubit<T extends OnlineSessionBase> extends Cubit<T?> {
 
   StreamSubscription? _subscription;
 
-  OnlineSessionCubit({
+  OnlineSessionCubitBase({
     required OnlineCodeCubit codeCubit,
     required FirebaseStorage storage,
     required FirebaseFirestore firestore,

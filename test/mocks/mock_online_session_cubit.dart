@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:mocktail/mocktail.dart';
-import 'package:online_sessions/bloc/online_session_cubit.dart';
+import 'package:online_sessions/bloc/online_session_cubit_base.dart';
 import 'package:online_sessions/model/online_session_base.dart';
 
 class MockOnlineSessionCubit<T extends OnlineSessionBase> extends Mock
-    implements OnlineSessionCubit<T> {
+    implements OnlineSessionCubitBase<T> {
   final StreamController<T?> _controller = StreamController.broadcast();
 
   @override

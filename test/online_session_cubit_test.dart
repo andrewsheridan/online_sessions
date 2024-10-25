@@ -2,7 +2,6 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:online_sessions/bloc/online_session_cubit.dart';
 
 import 'mocks/mock_collection_reference.dart';
 import 'mocks/mock_document_reference.dart';
@@ -11,6 +10,7 @@ import 'mocks/mock_firebase_firestore.dart';
 import 'mocks/mock_firebase_storage.dart';
 import 'mocks/mock_online_code_cubit.dart';
 import 'mocks/mock_username_cubit.dart';
+import 'online_session_cubit.dart';
 import 'test_online_session.dart';
 
 void main() {
