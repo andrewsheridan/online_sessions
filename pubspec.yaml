@@ -1,7 +1,9 @@
 name: online_sessions
 description: "Managing online sessions for VTTs."
-version: 0.0.1
+version: 0.0.2
 homepage:
+
+publish_to: none
 
 environment:
   sdk: ^3.5.3
@@ -9,6 +11,11 @@ environment:
 
 dependencies:
   collection: ^1.17.0
+  cubit_pool:
+    git:
+      url: https://github.com/andrewsheridan/cubit_pool
+      ref: 0.0.8
+    # path: "../cubit_pool"
   firebase_core: ^3.2.0
   firebase_storage: ^12.1.1
   flutter:
