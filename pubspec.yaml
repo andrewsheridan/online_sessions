@@ -1,0 +1,35 @@
+name: online_sessions
+description: "Managing online sessions for VTTs."
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ^3.5.3
+  flutter: ">=1.17.0"
+
+dependencies:
+  collection: ^1.17.0
+  firebase_core: ^3.2.0
+  firebase_storage: ^12.1.1
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.0.1
+  freezed_annotation: ^2.0.1
+  hydrated_bloc: ^9.1.5
+  logging: ^1.0.2
+  firebase_auth: ^5.1.2
+  cloud_firestore: ^5.3.0
+
+dev_dependencies:
+  bloc_test: ^9.1.0
+  build_runner: ^2.1.7
+  flutter_gen: ^5.4.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  freezed: ^2.5.2
+  json_serializable: ^6.1.6
+  mocktail: ^1.0.0
+  source_gen: ^1.2.2
+
+flutter:
