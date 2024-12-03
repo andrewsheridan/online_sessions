@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis_auth/auth_io.dart' as auth_io;
+import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class FirebaseAuthProvider extends ChangeNotifier {
   final Logger _logger = Logger("FirebaseAuthProvider");
@@ -88,7 +92,41 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
         _logger.info("Successfully signed in user via Google.");
         return output;
-      } else {
+      } else if (Platform.isWindows) {
+        final client = http.Client();
+        try {
+          // Trigger the authentication flow
+          final clientID = auth_io.ClientId(_clientID!);
+
+          final credentials =
+              await auth_io.obtainAccessCredentialsViaUserConsent(
+            clientID,
+            ["email"],
+            client,
+            (prompt) {
+              launchUrlString(prompt);
+            },
+          );
+          // Obtain the auth details from the request
+
+          // Create a new credential
+          final credential = GoogleAuthProvider.credential(
+            accessToken: credentials.accessToken.data,
+            idToken: credentials.idToken,
+          );
+          // Once signed in, return the UserCredential
+          await _instance.signInWithCredential(credential);
+
+          _logger.info("Successfully signed in user.");
+
+          client.close();
+        } on Exception catch (ex) {
+          _logger.severe("Failed to log in with google.", ex);
+          client.close();
+          rethrow;
+        }
+      }
+      {
 // Trigger the authentication flow
         final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 

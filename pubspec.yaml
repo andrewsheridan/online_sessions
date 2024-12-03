@@ -24,9 +24,12 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.0.1
   freezed_annotation: ^2.0.1
+  googleapis_auth: ^1.6.0
   google_sign_in: ^6.2.2
+  http: ^1.2.2
   hydrated_bloc: ^9.1.5
   logging: ^1.0.2
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   bloc_test: ^9.1.0
