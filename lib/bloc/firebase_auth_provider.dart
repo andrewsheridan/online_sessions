@@ -93,7 +93,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
         credential,
       );
 
-      _logger.info("Successfully signed in user.");
+      _logger.info("Successfully signed in user via Google.");
 
       return output;
     } on Exception catch (ex) {
@@ -104,10 +104,21 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   Future<UserCredential> signInAnonymously() async {
     try {
-      return await _instance.signInAnonymously();
+      final output = await _instance.signInAnonymously();
+      _logger.info("Anonymous sign in successful.");
+      return output;
     } catch (ex) {
       _logger.severe("Anonymous sign in failed.", ex);
       rethrow;
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      await _instance.signOut();
+      _logger.info("Sign out successful.");
+    } catch (ex) {
+      _logger.severe("Sign out failed.");
     }
   }
 }
