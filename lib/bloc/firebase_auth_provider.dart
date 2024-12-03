@@ -11,7 +11,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
   final String? _clientID;
 
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email'],
+    scopes: [],
     clientId: _clientID,
   );
 
@@ -75,27 +75,42 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   Future<UserCredential> googleSignIn() async {
     try {
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (kIsWeb) {
+        GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+        // googleProvider
+        //     .addScope('https://www.googleapis.com/auth/contacts.readonly');
+        // googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
 
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
+        // Once signed in, return the UserCredential
+        final output =
+            await FirebaseAuth.instance.signInWithPopup(googleProvider);
 
-      // Once signed in, return the UserCredential
-      final output = await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
+        _logger.info("Successfully signed in user via Google.");
+        return output;
+      } else {
+// Trigger the authentication flow
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      _logger.info("Successfully signed in user via Google.");
+        // Obtain the auth details from the request
+        final GoogleSignInAuthentication? googleAuth =
+            await googleUser?.authentication;
 
-      return output;
+        // Create a new credential
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken,
+          idToken: googleAuth?.idToken,
+        );
+
+        // Once signed in, return the UserCredential
+        final output = await FirebaseAuth.instance.signInWithCredential(
+          credential,
+        );
+
+        _logger.info("Successfully signed in user via Google.");
+
+        return output;
+      }
     } on Exception catch (ex) {
       _logger.severe("Failed to log in via Google.", ex);
       rethrow;
