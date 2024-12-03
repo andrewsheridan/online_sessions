@@ -1,4 +1,5 @@
 export 'bloc/code_generator.dart';
+export 'bloc/firebase_auth_provider.dart';
 export 'bloc/online_code_cubit.dart';
 export 'bloc/online_session_cubit_base.dart';
 export 'bloc/online_session_extensions.dart';

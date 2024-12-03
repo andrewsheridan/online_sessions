@@ -119,8 +119,13 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
 
   Future<User> ensureLoggedIn() async {
     if (_auth.currentUser != null) return _auth.currentUser!;
-    final credential = await _auth.signInAnonymously();
-    return credential.user!;
+    try {
+      final credential = await _auth.signInAnonymously();
+      return credential.user!;
+    } catch (ex) {
+      _logger.severe("Failed to log in anonymous user.");
+      rethrow;
+    }
   }
 
   Future<T?> _getCurrentSessionState(String code) async {
