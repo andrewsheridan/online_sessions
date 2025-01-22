@@ -12,10 +12,11 @@ environment:
 dependencies:
   cloud_firestore: ^5.3.0
   collection: ^1.17.0
+  crypto: ^3.0.6
   cubit_pool:
     git:
       url: https://github.com/andrewsheridan/cubit_pool
-      ref: 0.2.4
+      ref: 0.2.5
     # path: "../cubit_pool"
   firebase_auth: ^5.1.2
   firebase_core: ^3.2.0
@@ -27,6 +28,7 @@ dependencies:
   google_sign_in: ^6.2.2
   hydrated_bloc: ^9.1.5
   logging: ^1.0.2
+  sign_in_with_apple: ^6.1.4
 
 dev_dependencies:
   bloc_test: ^9.1.0
