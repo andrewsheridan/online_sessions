@@ -17,7 +17,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [],
-    // clientId: _clientID,
+    clientId: _clientID,
   );
 
   late final StreamSubscription _userChangedSubscription;
