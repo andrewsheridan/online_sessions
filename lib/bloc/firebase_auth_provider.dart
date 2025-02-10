@@ -12,7 +12,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class FirebaseAuthProvider extends ChangeNotifier {
   final Logger _logger = Logger("FirebaseAuthProvider");
-  final FirebaseAuth _instance;
+  final FirebaseAuth _firebaseAuth;
   final String? _clientID;
 
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -22,12 +22,11 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   late final StreamSubscription _userChangedSubscription;
 
-  FirebaseAuthProvider({
-    required FirebaseAuth instance,
-    required String? clientID,
-  })  : _instance = instance,
+  FirebaseAuthProvider(
+      {required FirebaseAuth instance, required String? clientID, i})
+      : _firebaseAuth = instance,
         _clientID = clientID {
-    _userChangedSubscription = _instance.userChanges().listen(
+    _userChangedSubscription = _firebaseAuth.userChanges().listen(
           _handleUserChanged,
         );
   }
@@ -42,7 +41,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  User? get currentUser => _instance.currentUser;
+  User? get currentUser => _firebaseAuth.currentUser;
 
   Future<User> ensureLoggedIn() async {
     if (currentUser != null) {
@@ -88,8 +87,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
         // googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
 
         // Once signed in, return the UserCredential
-        final output =
-            await FirebaseAuth.instance.signInWithPopup(googleProvider);
+        final output = await _firebaseAuth.signInWithPopup(googleProvider);
 
         _logger.info("Successfully signed in user via Google.");
         return output;
@@ -108,7 +106,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
         );
 
         // Once signed in, return the UserCredential
-        final output = await FirebaseAuth.instance.signInWithCredential(
+        final output = await _firebaseAuth.signInWithCredential(
           credential,
         );
 
@@ -124,7 +122,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   Future<UserCredential> signInAnonymously() async {
     try {
-      final output = await _instance.signInAnonymously();
+      final output = await _firebaseAuth.signInAnonymously();
       _logger.info("Anonymous sign in successful.");
       return output;
     } catch (ex) {
@@ -154,9 +152,9 @@ class FirebaseAuthProvider extends ChangeNotifier {
     try {
       final appleProvider = AppleAuthProvider();
       if (kIsWeb) {
-        await FirebaseAuth.instance.signInWithPopup(appleProvider);
+        await _firebaseAuth.signInWithPopup(appleProvider);
       } else if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid) {
-        await FirebaseAuth.instance.signInWithProvider(appleProvider);
+        await _firebaseAuth.signInWithProvider(appleProvider);
       } else {
         // Pulled from https://dev.to/offlineprogrammer/flutter-firebase-authentication-apple-sign-in-1m64
 
@@ -183,7 +181,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
         // Sign in the user with Firebase. If the nonce we generated earlier does
         // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-        await _instance.signInWithCredential(oauthCredential);
+        await _firebaseAuth.signInWithCredential(oauthCredential);
       }
     } catch (exception) {
       _logger.severe("Failed to login with Apple.", exception);
@@ -193,7 +191,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   Future<void> signOut() async {
     try {
-      await _instance.signOut();
+      await _firebaseAuth.signOut();
       _logger.info("Sign out successful.");
     } catch (ex) {
       _logger.severe("Sign out failed.");
