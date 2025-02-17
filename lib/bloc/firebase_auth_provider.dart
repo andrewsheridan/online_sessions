@@ -20,6 +20,9 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
   late final StreamSubscription _userChangedSubscription;
 
+  final _logInController = StreamController<User>.broadcast();
+  Stream<User> get logInStream => _logInController.stream;
+
   FirebaseAuthProvider({required FirebaseAuth instance})
       : _firebaseAuth = instance {
     _userChangedSubscription = _firebaseAuth.userChanges().listen(
@@ -86,6 +89,10 @@ class FirebaseAuthProvider extends ChangeNotifier {
         final output = await _firebaseAuth.signInWithPopup(googleProvider);
 
         _logger.info("Successfully signed in user via Google.");
+        if (output.user != null) {
+          _logInController.add(output.user!);
+        }
+
         return output;
       } else {
 // Trigger the authentication flow
@@ -107,6 +114,10 @@ class FirebaseAuthProvider extends ChangeNotifier {
         );
 
         _logger.info("Successfully signed in user via Google.");
+
+        if (output.user != null) {
+          _logInController.add(output.user!);
+        }
 
         return output;
       }
@@ -144,13 +155,21 @@ class FirebaseAuthProvider extends ChangeNotifier {
     return digest.toString();
   }
 
-  Future<void> signInWithApple() async {
+  Future<UserCredential> signInWithApple() async {
     try {
       final appleProvider = AppleAuthProvider();
       if (kIsWeb) {
-        await _firebaseAuth.signInWithPopup(appleProvider);
+        final output = await _firebaseAuth.signInWithPopup(appleProvider);
+        if (output.user != null) {
+          _logInController.add(output.user!);
+        }
+        return output;
       } else if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid) {
-        await _firebaseAuth.signInWithProvider(appleProvider);
+        final output = await _firebaseAuth.signInWithProvider(appleProvider);
+        if (output.user != null) {
+          _logInController.add(output.user!);
+        }
+        return output;
       } else {
         // Pulled from https://dev.to/offlineprogrammer/flutter-firebase-authentication-apple-sign-in-1m64
 
@@ -177,7 +196,12 @@ class FirebaseAuthProvider extends ChangeNotifier {
 
         // Sign in the user with Firebase. If the nonce we generated earlier does
         // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-        await _firebaseAuth.signInWithCredential(oauthCredential);
+        final output =
+            await _firebaseAuth.signInWithCredential(oauthCredential);
+        if (output.user != null) {
+          _logInController.add(output.user!);
+        }
+        return output;
       }
     } catch (exception) {
       _logger.severe("Failed to login with Apple.", exception);
