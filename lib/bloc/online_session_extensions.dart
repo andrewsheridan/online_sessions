@@ -28,4 +28,14 @@ extension OnlineSessionBaseExtensions on OnlineSessionBase {
 
     return "Unknown";
   }
+
+  bool isUserParticipating(User user) {
+    final uid = user.uid;
+
+    if (users.containsKey(uid)) return true;
+    if (adminID == uid) return true;
+    if (waitingUsers.containsKey(uid)) return true;
+
+    return false;
+  }
 }
