@@ -266,11 +266,15 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   bool get hasAccess {
     if (currentUserIsAdmin) return true;
     if (state == null) return false;
-    return state!.users.containsKey(_auth.currentUser!.uid);
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return false;
+    return state!.users.containsKey(currentUser.uid);
   }
 
   bool get awaitingAccess {
     if (state == null) return false;
-    return state!.waitingUsers.containsKey(_auth.currentUser!.uid);
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return false;
+    return state!.waitingUsers.containsKey(currentUser.uid);
   }
 }
