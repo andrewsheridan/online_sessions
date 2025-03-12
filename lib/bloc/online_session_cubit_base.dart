@@ -275,6 +275,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     if (state == null) return false;
     final currentUser = _auth.currentUser;
     if (currentUser == null) return false;
+    if (state!.adminID == currentUser.uid) return false;
     return state!.waitingUsers.containsKey(currentUser.uid);
   }
 }
