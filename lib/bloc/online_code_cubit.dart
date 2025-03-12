@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cubit_pool/hydrated_value_cubit.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'valid_code_generator.dart';
 
@@ -13,7 +12,6 @@ class OnlineCodeCubit extends HydratedValueCubit<String?> {
     required ValidCodeGenerator codeGenerator,
     required FirebaseFirestore database,
     required bool signOutUser,
-    required SharedPreferences sharedPreferences,
     String? state,
   })  : _codeGenerator = codeGenerator,
         _database = database,
