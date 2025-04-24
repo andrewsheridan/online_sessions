@@ -260,7 +260,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   bool get currentUserIsAdmin {
-    return state == null || _auth.currentUser?.uid == state!.adminID;
+    return state != null && _auth.currentUser?.uid == state!.adminID;
   }
 
   bool get hasAccess {
