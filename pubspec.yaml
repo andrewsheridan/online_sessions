@@ -16,7 +16,7 @@ dependencies:
   cubit_pool:
     git:
       url: https://github.com/andrewsheridan/cubit_pool
-      ref: 0.3.1
+      ref: 0.3.2
     # path: "../cubit_pool"
   firebase_auth: ^5.1.2
   firebase_core: ^3.2.0
