@@ -2,8 +2,6 @@ abstract class OnlineSessionBase {
   String get adminID;
   Map<String, String> get users;
   Map<String, String> get waitingUsers;
-
-  OnlineSessionBase({required String adminID});
   Map<String, dynamic> toJson();
 
   // OnlineSessionBase copyWith({
