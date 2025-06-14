@@ -158,7 +158,11 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
       removeUser(_auth.currentUser!.uid);
     }
 
-    _codeCubit.clear();
+    await _codeCubit.clear();
+    if (_subscription != null) {
+      await _subscription!.cancel();
+      _subscription = null;
+    }
 
     emit(null);
   }
