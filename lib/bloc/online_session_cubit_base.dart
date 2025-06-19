@@ -159,7 +159,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
 
       _currentSessionRef?.delete();
     } else {
-      removeUser(auth.currentUser!.uid);
+      await removeUser(auth.currentUser!.uid);
     }
 
     await _codeCubit.clear();
@@ -232,8 +232,8 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   @mustCallSuper
-  void removeUser(String userID) {
-    update(
+  Future<void> removeUser(String userID) async {
+    await update(
       {
         "waitingUsers.$userID": FieldValue.delete(),
         "users.$userID": FieldValue.delete(),
