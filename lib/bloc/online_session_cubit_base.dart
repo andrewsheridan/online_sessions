@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
@@ -14,7 +15,8 @@ import 'username_cubit.dart';
 abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     extends Cubit<T?> {
   final OnlineCodeCubit _codeCubit;
-  final FirebaseAuth _auth;
+  @protected
+  final FirebaseAuth auth;
   final FirebaseStorage _storage;
   final CollectionReference _sessionsRef;
   // final FirebaseFirestore _firestore;
@@ -40,14 +42,13 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     required OnlineCodeCubit codeCubit,
     required FirebaseStorage storage,
     required FirebaseFirestore firestore,
-    required FirebaseAuth auth,
+    required this.auth,
     required UsernameCubit usernameCubit,
     required bool signOutUser,
     required this.adminNickname,
     required this.sessionFactory,
     required this.fromJsonFactory,
   })  : _codeCubit = codeCubit,
-        _auth = auth,
         _sessionsRef = firestore.collection("sessions"),
         _usernameCubit = usernameCubit,
         _storage = storage,
@@ -68,6 +69,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
 
   Reference? get sessionStorageRef => _sessionStorageRef;
 
+  @mustCallSuper
   Future<String> createSession() async {
     try {
       if (currentUserIsAdmin) {
@@ -94,6 +96,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     }
   }
 
+  @mustCallSuper
   Future<void> joinSession(String code, String username) async {
     try {
       final user = await ensureLoggedIn();
@@ -118,9 +121,9 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   Future<User> ensureLoggedIn() async {
-    if (_auth.currentUser != null) return _auth.currentUser!;
+    if (auth.currentUser != null) return auth.currentUser!;
     try {
-      final credential = await _auth.signInAnonymously();
+      final credential = await auth.signInAnonymously();
       return credential.user!;
     } catch (ex) {
       _logger.severe("Failed to log in anonymous user.");
@@ -137,6 +140,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     return _parseSnapshot(currentState);
   }
 
+  @mustCallSuper
   Future<void> disconnectFromSession() async {
     if (_sessionStorageRef == null) {
       _logger.warning("No storage reference found, cannot clear images.");
@@ -155,7 +159,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
 
       _currentSessionRef?.delete();
     } else {
-      removeUser(_auth.currentUser!.uid);
+      removeUser(auth.currentUser!.uid);
     }
 
     await _codeCubit.clear();
@@ -206,6 +210,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     return null;
   }
 
+  @mustCallSuper
   void admitUser(String userID) {
     final currentState = state!;
     final username = currentState.waitingUsers[userID]!;
@@ -226,6 +231,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     );
   }
 
+  @mustCallSuper
   void removeUser(String userID) {
     update(
       {
@@ -264,20 +270,20 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   bool get currentUserIsAdmin {
-    return state != null && _auth.currentUser?.uid == state!.adminID;
+    return state != null && auth.currentUser?.uid == state!.adminID;
   }
 
   bool get hasAccess {
     if (currentUserIsAdmin) return true;
     if (state == null) return false;
-    final currentUser = _auth.currentUser;
+    final currentUser = auth.currentUser;
     if (currentUser == null) return false;
     return state!.users.containsKey(currentUser.uid);
   }
 
   bool get awaitingAccess {
     if (state == null) return false;
-    final currentUser = _auth.currentUser;
+    final currentUser = auth.currentUser;
     if (currentUser == null) return false;
     if (state!.adminID == currentUser.uid) return false;
     return state!.waitingUsers.containsKey(currentUser.uid);
