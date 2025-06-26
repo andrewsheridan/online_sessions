@@ -17,6 +17,8 @@ class MockDocumentReference extends Mock
     _snapshot = _createSnapshot();
   }
 
+  Map<String, dynamic>? get internalValue => _value;
+
   MockDocumentSnapshot _createSnapshot() {
     final snapshot = MockDocumentSnapshot();
     when(() => snapshot.exists).thenAnswer((_) => _value != null);

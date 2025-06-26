@@ -13,5 +13,6 @@ class OnlineSessionCubit extends OnlineSessionCubitBase<TestOnlineSession> {
     required super.adminNickname,
     required super.sessionFactory,
     required super.fromJsonFactory,
+    required super.functions,
   });
 }

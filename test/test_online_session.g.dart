@@ -6,9 +6,8 @@ part of 'test_online_session.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TestOnlineSessionImpl _$$TestOnlineSessionImplFromJson(
-        Map<String, dynamic> json) =>
-    _$TestOnlineSessionImpl(
+TestOnlineSession _$TestOnlineSessionFromJson(Map<String, dynamic> json) =>
+    TestOnlineSession(
       adminID: json['adminID'] as String,
       users: (json['users'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(k, e as String),
@@ -19,19 +18,20 @@ _$TestOnlineSessionImpl _$$TestOnlineSessionImplFromJson(
           ) ??
           const {},
       extraString: json['extraString'] as String? ?? "",
+      admitAutomatically: json['admitAutomatically'] as bool? ?? true,
+      extraBool: json['extraBool'] as bool? ?? false,
       extraDoubleMap: (json['extraDoubleMap'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(k, (e as num).toDouble()),
           ) ??
           const {},
-      extraBool: json['extraBool'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$$TestOnlineSessionImplToJson(
-        _$TestOnlineSessionImpl instance) =>
+Map<String, dynamic> _$TestOnlineSessionToJson(TestOnlineSession instance) =>
     <String, dynamic>{
       'adminID': instance.adminID,
       'users': instance.users,
       'waitingUsers': instance.waitingUsers,
+      'admitAutomatically': instance.admitAutomatically,
       'extraString': instance.extraString,
       'extraDoubleMap': instance.extraDoubleMap,
       'extraBool': instance.extraBool,

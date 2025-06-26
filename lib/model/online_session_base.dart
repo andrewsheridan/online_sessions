@@ -2,6 +2,7 @@ abstract class OnlineSessionBase {
   String get adminID;
   Map<String, String> get users;
   Map<String, String> get waitingUsers;
+  bool get admitAutomatically;
   Map<String, dynamic> toJson();
 
   // OnlineSessionBase copyWith({

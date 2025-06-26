@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   @protected
   final FirebaseAuth auth;
   final FirebaseStorage _storage;
+  final FirebaseFunctions _functions;
   final CollectionReference _sessionsRef;
   // final FirebaseFirestore _firestore;
   final Logger _logger = Logger("OnlineSessionCubit");
@@ -42,6 +44,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     required OnlineCodeCubit codeCubit,
     required FirebaseStorage storage,
     required FirebaseFirestore firestore,
+    required FirebaseFunctions functions,
     required this.auth,
     required UsernameCubit usernameCubit,
     required bool signOutUser,
@@ -52,6 +55,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
         _sessionsRef = firestore.collection("sessions"),
         _usernameCubit = usernameCubit,
         _storage = storage,
+        _functions = functions,
         super(null) {
     if (signOutUser) {
       emit(null);
@@ -99,9 +103,12 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   @mustCallSuper
   Future<void> joinSession(String code, String username) async {
     try {
-      final user = await ensureLoggedIn();
+      await ensureLoggedIn();
       _codeCubit.setCode(code.toUpperCase());
       _usernameCubit.setUsername(username);
+
+      final callable = _functions.httpsCallable("joinSession");
+      await callable({"username": username, "onlineSessionCode": code});
 
       final session = await _connectToSession(code.toUpperCase(), username);
 
@@ -110,14 +117,14 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
         _logger.severe(message);
         throw message;
       }
-
-      update({
-        "waitingUsers": {...session.waitingUsers, user.uid: username}
-      });
     } catch (ex) {
       _logger.severe("Failed to join session.", ex);
       rethrow;
     }
+  }
+
+  Future<void> setAdmitAutomatically(bool admitAutomatically) async {
+    return update({"admitAutomatically": admitAutomatically});
   }
 
   Future<User> ensureLoggedIn() async {
