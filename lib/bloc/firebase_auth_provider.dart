@@ -14,9 +14,7 @@ class FirebaseAuthProvider extends ChangeNotifier {
   final Logger _logger = Logger("FirebaseAuthProvider");
   final FirebaseAuth _firebaseAuth;
 
-  late final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: [],
-  );
+  late final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   late final StreamSubscription _userChangedSubscription;
 
@@ -96,16 +94,15 @@ class FirebaseAuthProvider extends ChangeNotifier {
         return output;
       } else {
 // Trigger the authentication flow
-        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        final GoogleSignInAccount googleUser =
+            await _googleSignIn.authenticate();
 
         // Obtain the auth details from the request
-        final GoogleSignInAuthentication? googleAuth =
-            await googleUser?.authentication;
+        final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
         // Create a new credential
         final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth?.accessToken,
-          idToken: googleAuth?.idToken,
+          idToken: googleAuth.idToken,
         );
 
         // Once signed in, return the UserCredential
