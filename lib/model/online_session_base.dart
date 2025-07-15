@@ -5,6 +5,8 @@ abstract class OnlineSessionBase {
   bool get admitAutomatically;
   Map<String, dynamic> toJson();
 
+  const OnlineSessionBase();
+
   // OnlineSessionBase copyWith({
   //   String? adminID,
   //   Map<String, String>? users,

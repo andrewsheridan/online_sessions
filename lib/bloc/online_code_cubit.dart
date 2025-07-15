@@ -7,19 +7,25 @@ import 'valid_code_generator.dart';
 class OnlineCodeCubit extends HydratedValueCubit<String?> {
   final ValidCodeGenerator _codeGenerator;
   final FirebaseFirestore _database;
+  final String? _storagePrefix;
 
   OnlineCodeCubit({
     required ValidCodeGenerator codeGenerator,
     required FirebaseFirestore database,
     required bool signOutUser,
+    String? storagePrefix,
     String? state,
   })  : _codeGenerator = codeGenerator,
         _database = database,
+        _storagePrefix = storagePrefix,
         super(state) {
     if (kDebugMode && signOutUser) {
       emit(null);
     }
   }
+
+  @override
+  String get storagePrefix => _storagePrefix ?? super.storagePrefix;
 
   void setCode(String? code) {
     emit(code);
