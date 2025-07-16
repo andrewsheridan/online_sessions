@@ -13,16 +13,20 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class FirebaseAuthProvider extends ChangeNotifier {
   final Logger _logger = Logger("FirebaseAuthProvider");
   final FirebaseAuth _firebaseAuth;
+  final String? _serverClientID;
 
-  late final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  late final GoogleSignIn _googleSignIn = GoogleSignIn.instance
+    ..initialize(serverClientId: _serverClientID);
 
   late final StreamSubscription _userChangedSubscription;
 
   final _logInController = StreamController<User>.broadcast();
   Stream<User> get logInStream => _logInController.stream;
 
-  FirebaseAuthProvider({required FirebaseAuth instance})
-      : _firebaseAuth = instance {
+  FirebaseAuthProvider(
+      {required FirebaseAuth instance, required String? serverClientID})
+      : _firebaseAuth = instance,
+        _serverClientID = serverClientID {
     _userChangedSubscription = _firebaseAuth.userChanges().listen(
           _handleUserChanged,
         );
