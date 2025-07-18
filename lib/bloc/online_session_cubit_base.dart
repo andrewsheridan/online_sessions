@@ -178,6 +178,18 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     emit(null);
   }
 
+  void _checkForUserAdmitted(T? updated) {
+    final user = auth.currentUser;
+    if (user == null) return;
+    if (updated == null) return;
+
+    if ((state?.users ?? {}).containsKey(user.uid)) return;
+
+    if (updated.users.containsKey(user.uid)) {
+      _connectedToSessionController.add(updated);
+    }
+  }
+
   /// Sets the current code,
   Future<T?> _connectToSession(String code, String username) async {
     await ensureLoggedIn();
@@ -187,14 +199,15 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
 
     final session = await _getCurrentSessionState(code);
 
+    _checkForUserAdmitted(session);
     emit(session);
 
     if (session == null) {
       _codeCubit.setCode(null);
     } else {
-      _connectedToSessionController.add(session);
       _subscription = _currentSessionRef!.snapshots().listen((value) {
         final snapshot = _parseSnapshot(value);
+        _checkForUserAdmitted(snapshot);
         emit(snapshot);
       });
     }
