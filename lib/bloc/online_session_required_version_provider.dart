@@ -16,10 +16,12 @@ class OnlineSessionRequiredVersionProvider extends ChangeNotifier {
     required FirebaseFirestore firestore,
     required String appVersionString,
     String versionKey = "online_session_required_version",
+    String settingsCollection = "settings",
   })  : _firestore = firestore,
         installedAppVersion = AppVersion.fromString(appVersionString) {
     _subscription = _firestore
-        .doc(versionKey)
+        .collection(settingsCollection)
+        .doc(versionKey.contains("/") ? versionKey : "$versionKey/")
         .snapshots()
         .listen(_onRequiredVersionChanged);
   }
@@ -46,6 +48,10 @@ class OnlineSessionRequiredVersionProvider extends ChangeNotifier {
 
   void _onRequiredVersionChanged(DocumentSnapshot<Map<String, dynamic>> event) {
     try {
+      final data = event.data();
+
+      _logger.info("Required version event received. Data: $data");
+
       if (!event.exists) {
         _logger.info("No required version set.");
         requiredVersion = null;
