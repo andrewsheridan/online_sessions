@@ -49,11 +49,21 @@ void main() {
             "$currentKey == $compareAgainstKey",
             () {
               expect(currentValue, compareAgainstValue);
+              expect(currentValue, greaterThanOrEqualTo(compareAgainstValue));
+              expect(currentValue, lessThanOrEqualTo(compareAgainstValue));
             },
           );
         } else {
           test("$currentKey > $compareAgainstKey", () {
             expect(currentValue.compareTo(compareAgainstValue), 1);
+            expect(currentValue, greaterThanOrEqualTo(compareAgainstValue));
+            expect(currentValue, greaterThan(compareAgainstValue));
+            expect(currentValue < compareAgainstValue, false);
+            expect(currentValue <= compareAgainstValue, false);
+            expect(compareAgainstValue, lessThanOrEqualTo(currentValue));
+            expect(compareAgainstValue, lessThan(currentValue));
+            expect(compareAgainstValue > currentValue, false);
+            expect(compareAgainstValue >= currentValue, false);
           });
         }
       }

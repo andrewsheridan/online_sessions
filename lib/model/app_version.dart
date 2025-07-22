@@ -27,6 +27,11 @@ class AppVersion with EquatableMixin implements Comparable {
     );
   }
 
+  bool operator >(AppVersion other) => compareTo(other) > 0;
+  bool operator >=(AppVersion other) => compareTo(other) >= 0;
+  bool operator <(AppVersion other) => compareTo(other) < 0;
+  bool operator <=(AppVersion other) => compareTo(other) <= 0;
+
   @override
   int compareTo(other) {
     if (other is! AppVersion) {

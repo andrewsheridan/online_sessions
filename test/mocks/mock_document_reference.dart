@@ -14,15 +14,15 @@ class MockDocumentReference extends Mock
       StreamController.broadcast();
 
   MockDocumentReference() {
-    _snapshot = _createSnapshot();
+    _snapshot = _createSnapshot(_value);
   }
 
   Map<String, dynamic>? get internalValue => _value;
 
-  MockDocumentSnapshot _createSnapshot() {
+  MockDocumentSnapshot _createSnapshot(Map<String, dynamic>? value) {
     final snapshot = MockDocumentSnapshot();
-    when(() => snapshot.exists).thenAnswer((_) => _value != null);
-    when(() => snapshot.data()).thenAnswer((_) => _value);
+    when(() => snapshot.exists).thenAnswer((_) => value != null);
+    when(() => snapshot.data()).thenAnswer((_) => value);
 
     return snapshot;
   }
@@ -44,7 +44,7 @@ class MockDocumentReference extends Mock
     } else {
       _value = {...(_value ?? {}), ...value};
     }
-    _snapshot = _createSnapshot();
+    _snapshot = _createSnapshot(_value);
     _controller.add(_snapshot);
   }
 
@@ -63,7 +63,7 @@ class MockDocumentReference extends Mock
       for (final item in data.entries) item.key.toString(): item.value,
     };
     _value = updated;
-    _snapshot = _createSnapshot();
+    _snapshot = _createSnapshot(updated);
     _controller.add(_snapshot);
   }
 }
