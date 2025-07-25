@@ -78,12 +78,12 @@ void main() {
           ? sessionData
           : TestOnlineSession.fromJson(currentSessionRef.internalValue!);
       if (admitAutomatically) {
-        currentSessionRef.setValue(currentSession.copyWith(
+        currentSessionRef.set(currentSession.copyWith(
           users: {...sessionData.users, uid: username},
           admitAutomatically: true,
         ).toJson());
       } else {
-        currentSessionRef.setValue(currentSession.copyWith(
+        currentSessionRef.set(currentSession.copyWith(
           waitingUsers: {...sessionData.waitingUsers, uid: username},
           admitAutomatically: false,
         ).toJson());
@@ -125,7 +125,7 @@ void main() {
     "Given there is a current code but no matching online session, when constructed, then clear the code and do not connect.",
     setUp: () {
       setupCode();
-      currentSessionRef.setValue(null);
+      currentSessionRef.set(null);
       auth.setUidAfterLogin(wardenID);
     },
     build: build,
@@ -138,7 +138,7 @@ void main() {
   blocTest(
     "Given there is a current code, when constructed, connect to the online session.",
     setUp: () {
-      currentSessionRef.setValue(sessionData.toJson());
+      currentSessionRef.set(sessionData.toJson());
       setupCode();
       auth.setUserID(wardenID);
     },
@@ -179,7 +179,7 @@ void main() {
   blocTest(
     "Given the user is the warden of the session, when connected to the session, isWarden will be true.",
     setUp: () {
-      currentSessionRef.setValue(sessionData.toJson());
+      currentSessionRef.set(sessionData.toJson());
       setupCode();
       auth.setUidAfterLogin(wardenID);
     },
@@ -195,7 +195,7 @@ void main() {
     "Given the user is not the warden of the session, when connected to the session, isWarden will be false.",
     setUp: () {
       setupCode();
-      currentSessionRef.setValue(sessionData.toJson());
+      currentSessionRef.set(sessionData.toJson());
       auth.setUserID(noAccessID);
     },
     build: build,
@@ -210,7 +210,7 @@ void main() {
     "Given the user is waiting for access, when connected to the session, awaitingAccess will be true.",
     setUp: () {
       setupCode();
-      currentSessionRef.setValue(sessionData.toJson());
+      currentSessionRef.set(sessionData.toJson());
       auth.setUserID(waitingAccessID);
     },
     build: build,
@@ -242,7 +242,7 @@ void main() {
     "Given a user has not yet been invited to an existing session and automatically admit is false, when a user joins a session with a code, then their ID will be added to the list of waiting.",
     setUp: () {
       admitAutomatically = false;
-      currentSessionRef.setValue(
+      currentSessionRef.set(
         TestOnlineSession(
           adminID: wardenID,
           users: {},
@@ -270,7 +270,7 @@ void main() {
     "Given a user has not yet been invited to an existing session and automatically admit is true, when a user joins a session with a code, then their ID will be added to the list of users.",
     setUp: () {
       admitAutomatically = true;
-      currentSessionRef.setValue(
+      currentSessionRef.set(
         TestOnlineSession(
           adminID: wardenID,
           users: {},
@@ -297,7 +297,7 @@ void main() {
     "Given a user is connected to a session, when the session state changes, then that change will be reflected in the cubit.",
     setUp: () {
       setupCode();
-      currentSessionRef.setValue(
+      currentSessionRef.set(
         TestOnlineSession(adminID: wardenID).toJson(),
       );
       auth.setUserID(wardenID);

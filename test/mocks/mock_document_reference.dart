@@ -38,11 +38,11 @@ class MockDocumentReference extends Mock
   }
 
   @override
-  Future<void> set(Map<String, dynamic> value, [SetOptions? options]) async {
+  Future<void> set(Map<String, dynamic>? value, [SetOptions? options]) async {
     if (options == null || options.merge != true) {
       _value = value;
     } else {
-      _value = {...(_value ?? {}), ...value};
+      _value = {...(_value ?? {}), ...?value};
     }
     _snapshot = _createSnapshot(_value);
     _controller.add(_snapshot);

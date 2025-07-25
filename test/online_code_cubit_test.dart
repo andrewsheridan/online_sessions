@@ -30,7 +30,7 @@ void main() {
 
     when(() => database.collection(any())).thenReturn(collection);
     when(() => collection.doc(any())).thenReturn(doc);
-    doc.setValue(null);
+    doc.set(null);
     when(() => storage.write(any(), any())).thenAnswer(
       (_) => Future.value(),
     );
@@ -60,8 +60,9 @@ void main() {
       var index = 0;
       final codes = ["123456", "ABCDEF"];
 
-      doc.setValue({});
+      doc.set({});
       final emptyDoc = MockDocumentReference();
+
       when(() => collection.doc("123456")).thenReturn(doc);
       when(() => collection.doc("ABCDEF")).thenReturn(emptyDoc);
 

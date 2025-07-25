@@ -15,13 +15,11 @@ class OnlineSessionRequiredVersionProvider extends ChangeNotifier {
   OnlineSessionRequiredVersionProvider({
     required FirebaseFirestore firestore,
     required String appVersionString,
-    String versionKey = "online_session_required_version",
-    String settingsCollection = "settings",
+    String versionDocPath = "settings/online_session_required_version",
   })  : _firestore = firestore,
         installedAppVersion = AppVersion.fromString(appVersionString) {
     _subscription = _firestore
-        .collection(settingsCollection)
-        .doc(versionKey.contains("/") ? versionKey : "$versionKey/")
+        .doc(versionDocPath)
         .snapshots()
         .listen(_onRequiredVersionChanged);
   }

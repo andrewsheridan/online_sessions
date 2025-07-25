@@ -11,27 +11,26 @@ void main() {
   // late MockDocumentSnapshot snapshot;
   // late StreamController<MockDocumentSnapshot> requiredVersionController;
   const requiredVersionKey = "required_version";
+  const collectionKey = "settings";
 
   setUp(() {
     firestore = MockFirebaseFirestore();
     documentReference = MockDocumentReference();
     // snapshot = MockDocumentSnapshot();
     // requiredVersionController = StreamController<MockDocumentSnapshot>();
-
-    when(() => firestore.doc(requiredVersionKey))
+    when(() => firestore.doc("$collectionKey/$requiredVersionKey"))
         .thenAnswer((_) => documentReference);
   });
 
   void setUpRequiredVersion(String? requiredVersion) {
-    documentReference.update({"version": requiredVersion});
+    documentReference.set({"version": requiredVersion});
   }
 
   OnlineSessionRequiredVersionProvider build(String appVersion) =>
       OnlineSessionRequiredVersionProvider(
-        firestore: firestore,
-        appVersionString: appVersion,
-        versionKey: requiredVersionKey,
-      );
+          firestore: firestore,
+          appVersionString: appVersion,
+          versionDocPath: "$collectionKey/$requiredVersionKey");
 
   test(
     "Required Version & Update Required",
