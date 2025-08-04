@@ -252,6 +252,18 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   @mustCallSuper
+  Future<void> setUsername(String userID, String username) async {
+    return set(
+      {
+        "users": {
+          userID: username,
+        },
+      },
+      SetOptions(merge: true),
+    );
+  }
+
+  @mustCallSuper
   Future<void> removeUser(String userID) async {
     await update(
       {
