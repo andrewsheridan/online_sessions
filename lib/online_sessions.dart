@@ -4,6 +4,7 @@ export 'bloc/online_code_cubit.dart';
 export 'bloc/online_session_cubit_base.dart';
 export 'bloc/online_session_extensions.dart';
 export 'bloc/online_session_required_version_provider.dart';
+export 'bloc/online_sessions_build_context_extensions.dart';
 export 'bloc/username_cubit.dart';
 export 'bloc/valid_code_generator.dart';
 export 'model/app_version.dart';
