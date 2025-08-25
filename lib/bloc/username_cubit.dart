@@ -1,9 +1,10 @@
-import 'package:cubit_pool/hydrated_value_cubit.dart';
+import 'hydrated_value_cubit.dart';
 
 class UsernameCubit extends HydratedValueCubit<String> {
   final String? _storagePrefix;
 
-  UsernameCubit({String initialState = "", String? storagePrefix})
+  UsernameCubit(
+      {String initialState = "", String storagePrefix = "UsernameCubit"})
       : _storagePrefix = storagePrefix,
         super(initialState);
 
