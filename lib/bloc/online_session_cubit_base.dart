@@ -25,7 +25,8 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   final Logger _logger = Logger("OnlineSessionCubit");
   final UsernameCubit _usernameCubit;
   final String adminNickname;
-  final T Function({required String adminID}) sessionFactory;
+  final T Function({required String adminID, required String code})
+      sessionFactory;
   final T Function(Map<String, dynamic> json) fromJsonFactory;
 
   final _connectedToSessionController = StreamController<T>.broadcast();
@@ -85,7 +86,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
       _currentSessionRef = _sessionsRef.doc(code);
 
       set(
-        sessionFactory(adminID: user.uid).toJson(),
+        sessionFactory(adminID: user.uid, code: code).toJson(),
         SetOptions(merge: true),
       );
 

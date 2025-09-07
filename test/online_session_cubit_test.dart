@@ -101,7 +101,7 @@ void main() {
         functions: functions,
         signOutUser: signOutUser,
         adminNickname: "Lord Ruler",
-        sessionFactory: ({required adminID}) =>
+        sessionFactory: ({required adminID, required code}) =>
             TestOnlineSession(adminID: adminID),
         fromJsonFactory: (Map<String, dynamic> data) {
           return TestOnlineSession.fromJson(data);
