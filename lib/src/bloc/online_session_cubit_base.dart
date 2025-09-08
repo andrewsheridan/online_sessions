@@ -213,7 +213,8 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
 
     _subscription = _currentSessionRef!
         .snapshots(source: ListenSource.defaultSource)
-        .listen(_handleSnapshotReceived);
+        .listen(_handleSnapshotReceived,
+            cancelOnError: false, onError: _onError, onDone: _onDone);
 
     return snapshotResult;
   }
@@ -233,6 +234,14 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
             .warning("Intial snapshot was from cache in _connectToSession().");
         break;
     }
+  }
+
+  void _onError(Object error, StackTrace stackTrace) {
+    _logger.severe("Error received from stream snapshot.", error, stackTrace);
+  }
+
+  void _onDone() {
+    _logger.warning("Done message received from stream snapshot.");
   }
 
   SnapshotResult<T> _parseSnapshot(DocumentSnapshot snapshot) {
