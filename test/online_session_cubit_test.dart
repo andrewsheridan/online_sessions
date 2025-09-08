@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'mocks/mock_collection_reference.dart';
@@ -44,6 +45,15 @@ void main() {
   late MockHttpsCallableResult callableResult;
 
   bool admitAutomatically;
+
+  setUpAll(() {
+    Logger.root.onRecord.listen((record) {
+      debugPrint(record.message);
+      if (record.stackTrace != null) {
+        debugPrintStack(stackTrace: record.stackTrace!);
+      }
+    });
+  });
 
   setUp(() {
     WidgetsFlutterBinding.ensureInitialized();

@@ -4,16 +4,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'mock_document_snapshot.dart';
+import 'mock_snapshot_metadata.dart';
 
 // ignore: subtype_of_sealed_class, must_be_immutable
 class MockDocumentReference extends Mock
     implements DocumentReference<Map<String, dynamic>> {
   Map<String, dynamic>? _value;
   late MockDocumentSnapshot _snapshot;
+  late final MockSnapshotMetadata _metadata;
   final StreamController<MockDocumentSnapshot> _controller =
       StreamController.broadcast();
 
   MockDocumentReference() {
+    _metadata = MockSnapshotMetadata();
+    when(() => _metadata.isFromCache).thenReturn(false);
     _snapshot = _createSnapshot(_value);
   }
 
@@ -23,6 +27,7 @@ class MockDocumentReference extends Mock
     final snapshot = MockDocumentSnapshot();
     when(() => snapshot.exists).thenAnswer((_) => value != null);
     when(() => snapshot.data()).thenAnswer((_) => value);
+    when(() => snapshot.metadata).thenReturn(_metadata);
 
     return snapshot;
   }

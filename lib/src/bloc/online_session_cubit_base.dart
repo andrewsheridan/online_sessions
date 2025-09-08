@@ -94,7 +94,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
       final code = await _codeCubit.generateCode();
       _currentSessionRef = _sessionsRef.doc(code);
 
-      set(
+      await set(
         sessionFactory(adminID: user.uid, code: code).toJson(),
         SetOptions(merge: true),
       );
@@ -203,28 +203,36 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     _currentSessionRef = _sessionsRef.doc(code);
     _sessionStorageRef = _storage.ref("sessions/$code");
 
-    final snapshotResult = await _getCurrentSessionState(code);
+    try {
+      final snapshotResult = await _getCurrentSessionState(code);
 
-    switch (snapshotResult) {
-      case FromDatabaseSnapshotResult<T> success:
-        final session = success.data;
-        _checkForUserAdmitted(session);
-        emit(session);
-      case EmptySnapshotResult<T>():
-        _logger.warning("Intial snapshot was empty in _connectToSession().");
-        break;
-      case FromCacheSnapshotResult<T>():
-        _logger
-            .warning("Intial snapshot was from cache in _connectToSession().");
-        break;
+      switch (snapshotResult) {
+        case FromDatabaseSnapshotResult<T> success:
+          final session = success.data;
+          _checkForUserAdmitted(session);
+          emit(session);
+        case EmptySnapshotResult<T>():
+          _logger.warning("Intial snapshot was empty in _connectToSession().");
+          emit(null);
+          _codeCubit.setCode(null);
+          break;
+        case FromCacheSnapshotResult<T>():
+          _logger.warning(
+              "Intial snapshot was from cache in _connectToSession().");
+          break;
+      }
+      _subscription = _currentSessionRef!
+          .snapshots(source: ListenSource.defaultSource)
+          .listen(_handleSnapshotReceived,
+              cancelOnError: false, onError: _onError, onDone: _onDone);
+
+      return snapshotResult;
+    } catch (ex) {
+      _logger.severe("Error when connecting to session.", ex);
+      emit(null);
+      _codeCubit.setCode(null);
+      return EmptySnapshotResult();
     }
-
-    _subscription = _currentSessionRef!
-        .snapshots(source: ListenSource.defaultSource)
-        .listen(_handleSnapshotReceived,
-            cancelOnError: false, onError: _onError, onDone: _onDone);
-
-    return snapshotResult;
   }
 
   void _handleSnapshotReceived(DocumentSnapshot<Object?> value) {
