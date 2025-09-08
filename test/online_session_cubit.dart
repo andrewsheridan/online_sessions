@@ -1,4 +1,4 @@
-import 'package:online_sessions/bloc/online_session_cubit_base.dart';
+import 'package:online_sessions/online_sessions.dart';
 
 import 'test_online_session.dart';
 

@@ -10,6 +10,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 
 import '../model/online_session_base.dart';
+import '../model/snapshot_result.dart';
 import 'online_code_cubit.dart';
 import 'username_cubit.dart';
 
@@ -111,13 +112,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
       final callable = _functions.httpsCallable("joinSession");
       await callable({"username": username, "onlineSessionCode": code});
 
-      final session = await _connectToSession(code.toUpperCase(), username);
-
-      if (session == null) {
-        final message = "Session with code $code not found.";
-        _logger.severe(message);
-        throw message;
-      }
+      await _connectToSession(code.toUpperCase(), username);
     } catch (ex) {
       _logger.severe("Failed to join session.", ex);
       rethrow;
@@ -139,10 +134,11 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     }
   }
 
-  Future<T?> _getCurrentSessionState(String code) async {
-    final currentState = await _currentSessionRef!.get();
+  Future<SnapshotResult<T>> _getCurrentSessionState(String code) async {
+    final currentState =
+        await _currentSessionRef!.get(GetOptions(source: Source.server));
     if (!currentState.exists) {
-      return null;
+      return EmptySnapshotResult();
     }
 
     return _parseSnapshot(currentState);
@@ -192,43 +188,71 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   /// Sets the current code,
-  Future<T?> _connectToSession(String code, String username) async {
+  Future<SnapshotResult<T>> _connectToSession(
+      String code, String username) async {
     await ensureLoggedIn();
     _subscription?.cancel();
     _currentSessionRef = _sessionsRef.doc(code);
     _sessionStorageRef = _storage.ref("sessions/$code");
 
-    final session = await _getCurrentSessionState(code);
+    final snapshotResult = await _getCurrentSessionState(code);
 
-    _checkForUserAdmitted(session);
-    emit(session);
-
-    if (session == null) {
-      _codeCubit.setCode(null);
-    } else {
-      _subscription = _currentSessionRef!.snapshots().listen((value) {
-        final snapshot = _parseSnapshot(value);
-        _checkForUserAdmitted(snapshot);
-        emit(snapshot);
-      });
+    switch (snapshotResult) {
+      case FromDatabaseSnapshotResult<T> success:
+        final session = success.data;
+        _checkForUserAdmitted(session);
+        emit(session);
+      case EmptySnapshotResult<T>():
+        _logger.warning("Intial snapshot was empty in _connectToSession().");
+        break;
+      case FromCacheSnapshotResult<T>():
+        _logger
+            .warning("Intial snapshot was from cache in _connectToSession().");
+        break;
     }
 
-    return session;
+    _subscription = _currentSessionRef!
+        .snapshots(source: ListenSource.defaultSource)
+        .listen(_handleSnapshotReceived);
+
+    return snapshotResult;
   }
 
-  T? _parseSnapshot(DocumentSnapshot snapshot) {
+  void _handleSnapshotReceived(DocumentSnapshot<Object?> value) {
+    final snapshot = _parseSnapshot(value);
+    switch (snapshot) {
+      case FromDatabaseSnapshotResult<T> success:
+        final session = success.data;
+        _checkForUserAdmitted(session);
+        emit(session);
+      case EmptySnapshotResult<T>():
+        _logger.warning("Intial snapshot was empty in _connectToSession().");
+        break;
+      case FromCacheSnapshotResult<T>():
+        _logger
+            .warning("Intial snapshot was from cache in _connectToSession().");
+        break;
+    }
+  }
+
+  SnapshotResult<T> _parseSnapshot(DocumentSnapshot snapshot) {
     try {
       if (!snapshot.exists) {
-        return null;
-      } else {
-        final map = snapshot.data() as Map<String, dynamic>;
-        final session = fromJsonFactory(map);
-        return session;
+        return EmptySnapshotResult();
       }
+
+      final map = snapshot.data() as Map<String, dynamic>;
+      final session = fromJsonFactory(map);
+
+      if (snapshot.metadata.isFromCache) {
+        return FromCacheSnapshotResult(data: session);
+      }
+
+      return FromDatabaseSnapshotResult(data: session);
     } catch (ex) {
       _logger.severe("Failed to parse session.", ex);
+      return EmptySnapshotResult();
     }
-    return null;
   }
 
   @mustCallSuper

@@ -1,5 +1,5 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:online_sessions/bloc/online_code_cubit.dart';
+import 'package:online_sessions/online_sessions.dart';
 
 class MockOnlineCodeCubit extends Mock implements OnlineCodeCubit {
   String? _code;

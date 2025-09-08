@@ -1,5 +1,5 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:online_sessions/bloc/valid_code_generator.dart';
+import 'package:online_sessions/online_sessions.dart';
 
 class MockValidCodeGenerator extends Mock implements ValidCodeGenerator {
   String _code;

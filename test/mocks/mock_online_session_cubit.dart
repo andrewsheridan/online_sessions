@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:mocktail/mocktail.dart';
-import 'package:online_sessions/bloc/online_session_cubit_base.dart';
-import 'package:online_sessions/model/online_session_base.dart';
+import 'package:online_sessions/src/bloc/online_session_cubit_base.dart';
+import 'package:online_sessions/src/model/online_session_base.dart';
 
 class MockOnlineSessionCubit<T extends OnlineSessionBase> extends Mock
     implements OnlineSessionCubitBase<T> {

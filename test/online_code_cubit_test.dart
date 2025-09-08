@@ -1,8 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:online_sessions/bloc/online_code_cubit.dart';
-import 'package:online_sessions/bloc/valid_code_generator.dart';
+import 'package:online_sessions/online_sessions.dart';
 
 import 'mocks/mock_code_generator.dart';
 import 'mocks/mock_collection_reference.dart';

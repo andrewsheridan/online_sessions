@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:online_sessions/model/app_version.dart';
+import 'package:online_sessions/src/model/app_version.dart';
 
 void main() {
   final testCases = {

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:online_sessions/model/online_session_base.dart';
+import 'package:online_sessions/src/model/online_session_base.dart';
 
 part 'test_online_session.freezed.dart';
 part 'test_online_session.g.dart';
