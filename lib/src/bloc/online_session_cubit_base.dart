@@ -235,7 +235,8 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
         _checkForUserAdmitted(session);
         emit(session);
       case EmptySnapshotResult<T>():
-        _logger.warning("Intial snapshot was empty in _connectToSession().");
+        _logger.warning("Snapshot was empty in _handleSnapshotReceived().");
+        emit(null);
         break;
       case FromCacheSnapshotResult<T>():
         _logger
