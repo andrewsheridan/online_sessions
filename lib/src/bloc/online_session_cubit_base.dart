@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
+import 'package:online_sessions/src/model/snapshot_error.dart';
 
 import '../model/online_session_base.dart';
 import '../model/snapshot_result.dart';
@@ -33,6 +34,13 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   final _connectedToSessionController = StreamController<T>.broadcast();
   Stream<T> get connectedToSessionStream =>
       _connectedToSessionController.stream;
+
+  final _snapshotErrorController = StreamController<SnapshotError>.broadcast();
+  Stream<SnapshotError> get snapshotErrorStream =>
+      _snapshotErrorController.stream;
+
+  final _snapshotDoneController = StreamController<void>.broadcast();
+  Stream<void> get snapshotDoneStream => _snapshotDoneController.stream;
 
   final _userRemovedController = StreamController<String>.broadcast();
   Stream<String> get userRemovedStream => _userRemovedController.stream;
@@ -237,10 +245,13 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   void _onError(Object error, StackTrace stackTrace) {
+    _snapshotErrorController
+        .add(SnapshotError(error: error, stackTrace: stackTrace));
     _logger.severe("Error received from stream snapshot.", error, stackTrace);
   }
 
   void _onDone() {
+    _snapshotDoneController.add(null);
     _logger.warning("Done message received from stream snapshot.");
   }
 

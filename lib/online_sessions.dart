@@ -11,4 +11,5 @@ export 'src/bloc/username_cubit.dart';
 export 'src/bloc/valid_code_generator.dart';
 export 'src/model/app_version.dart';
 export 'src/model/online_session_base.dart';
+export 'src/model/snapshot_error.dart';
 export 'src/model/snapshot_result.dart';
