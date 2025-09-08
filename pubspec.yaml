@@ -1,6 +1,6 @@
 name: online_sessions
 description: "Managing online sessions for VTTs."
-version: 1.4.0
+version: 1.4.1
 homepage:
 
 publish_to: none

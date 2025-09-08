@@ -5,6 +5,7 @@ export 'src/bloc/online_code_cubit.dart';
 export 'src/bloc/online_session_cubit_base.dart';
 export 'src/bloc/online_session_extensions.dart';
 export 'src/bloc/online_session_required_version_provider.dart';
+export 'src/bloc/online_session_status_provider.dart';
 export 'src/bloc/online_sessions_build_context_extensions.dart';
 export 'src/bloc/transfer_user_on_login_handler.dart';
 export 'src/bloc/username_cubit.dart';
