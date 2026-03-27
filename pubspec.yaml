@@ -1,6 +1,6 @@
 name: online_sessions
 description: "Managing online sessions for VTTs."
-version: 1.5.2
+version: 1.5.3
 homepage:
 
 publish_to: none
@@ -10,14 +10,14 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  cloud_firestore: ^6.1.2
-  cloud_functions: ^6.0.6
+  cloud_firestore: 5.6.12
+  cloud_functions: 5.6.2
   collection: ^1.17.0
   crypto: ^3.0.6
   equatable: ^2.0.7
-  firebase_auth: ^6.1.4
-  firebase_core: ^4.4.0
-  firebase_storage: ^13.0.6
+  firebase_auth: 5.7.0
+  firebase_core: 3.15.2
+  firebase_storage: 12.4.10
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
