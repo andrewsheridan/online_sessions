@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:online_sessions/online_sessions.dart';
 
 import 'mocks/mock_collection_reference.dart';
 import 'mocks/mock_document_reference.dart';
@@ -116,6 +117,7 @@ void main() {
         fromJsonFactory: (Map<String, dynamic> data) {
           return TestOnlineSession.fromJson(data);
         },
+        maxUserCount: 8,
       );
 
   void setupCode() {
@@ -317,5 +319,94 @@ void main() {
       currentSessionRef.set(sessionData.toJson());
     },
     expect: () => [sessionData],
+  );
+
+  blocTest(
+    "Given the max number of users is met, when joinSession is called, then [MaxUsersException] will be thrown.",
+    build: build,
+    setUp: () {
+      setupCode();
+      auth.setUidAfterLogin("BLAH");
+      currentSessionRef.set(
+        TestOnlineSession(
+          adminID: wardenID,
+          users: {for (int i = 0; i < 8; i++) i.toString(): i.toString()},
+          admitAutomatically: true,
+          waitingUsers: {},
+        ).toJson(),
+      );
+    },
+    act: (bloc) async {
+      await bloc.joinSession(code, "Blah");
+    },
+    errors: () => [isA<MaxUserException>()],
+  );
+
+  blocTest(
+    "Given the max number of users is not met, when joinSession is called, then [MaxUsersException] will be thrown.",
+    build: build,
+    setUp: () {
+      setupCode();
+      auth.setUidAfterLogin("BLAH");
+      currentSessionRef.set(
+        TestOnlineSession(
+          adminID: wardenID,
+          users: {for (int i = 0; i < 7; i++) i.toString(): i.toString()},
+          admitAutomatically: true,
+          waitingUsers: {},
+        ).toJson(),
+      );
+    },
+    act: (bloc) async {
+      await bloc.joinSession(code, "Blah");
+      await pumpEventQueue();
+    },
+    errors: () => [],
+  );
+
+  blocTest(
+    "Given the max number of users is met, when [admitUser] is called, then [MaxUsersException] will be thrown.",
+    build: build,
+    setUp: () {
+      setupCode();
+      auth.setUserID(wardenID);
+      currentSessionRef.set(
+        TestOnlineSession(
+          adminID: wardenID,
+          users: {for (int i = 0; i < 8; i++) i.toString(): i.toString()},
+          admitAutomatically: true,
+          waitingUsers: {"waiting": "waiting"},
+        ).toJson(),
+      );
+    },
+    act: (bloc) async {
+      await pumpEventQueue();
+      await bloc.admitUser("waiting");
+      await pumpEventQueue();
+    },
+    errors: () => [isA<MaxUserException>()],
+  );
+
+  blocTest(
+    "Given the max number of users is not met, when [admitUser] is called, then [MaxUsersException] will not be thrown.",
+    build: build,
+    setUp: () {
+      setupCode();
+      auth.setUserID(wardenID);
+      currentSessionRef.set(
+        TestOnlineSession(
+          adminID: wardenID,
+          users: {for (int i = 0; i < 7; i++) i.toString(): i.toString()},
+          admitAutomatically: true,
+          waitingUsers: {waitingAccessID: waitingAccessID},
+        ).toJson(),
+      );
+    },
+    act: (bloc) async {
+      await pumpEventQueue();
+      await bloc.admitUser(waitingAccessID);
+      await pumpEventQueue();
+    },
+    errors: () => [],
   );
 }

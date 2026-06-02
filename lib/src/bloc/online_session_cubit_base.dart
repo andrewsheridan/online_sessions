@@ -30,6 +30,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   final T Function({required String adminID, required String code})
       sessionFactory;
   final T Function(Map<String, dynamic> json) fromJsonFactory;
+  final int maxUserCount;
 
   final _connectedToSessionController = StreamController<T>.broadcast();
   Stream<T> get connectedToSessionStream =>
@@ -61,6 +62,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     required this.adminNickname,
     required this.sessionFactory,
     required this.fromJsonFactory,
+    required this.maxUserCount,
   })  : _codeCubit = codeCubit,
         _sessionsRef = firestore.collection("sessions"),
         _usernameCubit = usernameCubit,
@@ -111,11 +113,27 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   @mustCallSuper
+
+  /// Throws MaxUserException if the number of admitted users exceeds maxUserCount.
   Future<void> joinSession(String code, String username) async {
     try {
       await ensureLoggedIn();
-      _codeCubit.setCode(code.toUpperCase());
+
       _usernameCubit.setUsername(username);
+
+      final sessionData = await _sessionsRef.doc(code).get();
+      final sessionJson = _parseSnapshot(sessionData);
+      final data = switch (sessionJson) {
+        EmptySnapshotResult<T>() => null,
+        FromCacheSnapshotResult<T>() => sessionJson.data,
+        FromDatabaseSnapshotResult<T>() => sessionJson.data
+      };
+
+      if (data != null && data.users.length >= maxUserCount) {
+        throw MaxUserException();
+      }
+
+      _codeCubit.setCode(code.toUpperCase());
 
       final callable = _functions.httpsCallable("joinSession");
       await callable({"username": username, "onlineSessionCode": code});
@@ -285,17 +303,23 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
   }
 
   @mustCallSuper
-  void admitUser(String userID) {
+
+  /// Throws [MaxUserException] when maximum number of users reached.
+  Future<void> admitUser(String userID) async {
     final currentState = state!;
     final username = currentState.waitingUsers[userID]!;
 
-    update(
+    if (currentState.users.length >= maxUserCount) {
+      throw MaxUserException();
+    }
+
+    await update(
       {
         "waitingUsers.$userID": FieldValue.delete(),
       },
     );
 
-    set(
+    await set(
       {
         "users": {
           userID: username,
@@ -375,3 +399,5 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     return state!.waitingUsers.containsKey(currentUser.uid);
   }
 }
+
+class MaxUserException {}
