@@ -1,6 +1,6 @@
 name: online_sessions
 description: "Managing online sessions for VTTs."
-version: 1.6.0
+version: 1.6.1
 homepage:
 
 publish_to: none
@@ -23,7 +23,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   freezed_annotation: ^3.0.0
   google_sign_in: ^7.1.1
-  hydrated_bloc: ^11.0.0
+  hydrated_bloc: ^10.1.1
   logging: ^1.0.2
   sign_in_with_apple: ^8.1.0
 
