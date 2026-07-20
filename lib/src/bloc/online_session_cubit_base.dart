@@ -248,7 +248,7 @@ abstract class OnlineSessionCubitBase<T extends OnlineSessionBase>
     } catch (ex) {
       _logger.severe("Error when connecting to session.", ex);
       emit(null);
-      _codeCubit.setCode(null);
+      // _codeCubit.setCode(null);
       return EmptySnapshotResult();
     }
   }
