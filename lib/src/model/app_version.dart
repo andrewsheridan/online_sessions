@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-class AppVersion with EquatableMixin implements Comparable {
+class AppVersion with Equatable implements Comparable {
   final int major;
   final int minor;
   final int patch;
